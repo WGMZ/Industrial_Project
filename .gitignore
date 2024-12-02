@@ -1,0 +1,14 @@
+# Misc
+.DS_Store
+
+# NodeJS
+node_modules/
+
+# Logs
+*.log*
+
+# Build
+.turbo/
+
+# NextJS
+.next/
