@@ -1,11 +1,12 @@
 import '~/globals.css';
 
 import { PropsWithChildren } from 'react';
-import { AntdRegistry } from '@ant-design/nextjs-registry';
-import { Metadata } from 'next';
 
+import { Metadata } from 'next';
 import { Layout } from '~/components/layout';
 import { Provider } from '~/provider';
+
+import { AntdRegistry } from '@ant-design/nextjs-registry';
 
 export const metadata: Metadata = {
   title: 'Securities Credit Risk Monitor',

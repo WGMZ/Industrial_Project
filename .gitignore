@@ -5,10 +5,10 @@
 node_modules/
 
 # Logs
+logs/
 *.log*
 
 # Build
+dist/
 .turbo/
-
-# NextJS
 .next/

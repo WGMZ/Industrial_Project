@@ -1,0 +1,23 @@
+module.exports = {
+  ...require('mwts/.prettierrc.json'),
+  printWidth: 140,
+  singleQuote: true,
+  jsxSingleQuote: true,
+  semi: true,
+  trailingComma: 'all',
+  arrowParens: 'always',
+  plugins: ['@ianvs/prettier-plugin-sort-imports'],
+  importOrder: [
+    '^@midwayjs/core$',
+    '^@midwayjs/koa$',
+    '^@midwayjs/(.*)$',
+    '^node:(.*)$',
+    '<BUILTIN_MODULES>',
+    '<THIRD_PARTY_MODULES>',
+    '',
+    '^~/(.*)$',
+    '^[.]',
+    '^/(.*)$',
+  ],
+  importOrderParserPlugins: ['typescript', 'decorators-legacy'],
+};

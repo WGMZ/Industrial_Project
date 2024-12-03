@@ -1,5 +1,12 @@
-import { Card, List } from 'antd';
+'use client';
+
+import GaugeComponent from 'react-gauge-component';
+import { MiniChart, SingleTicker, TickerTape } from 'react-ts-tradingview-widgets';
+import { useQuery } from '@tanstack/react-query';
+import { Card, List, Statistic } from 'antd';
 import { ActivityIcon, AtSignIcon, FrownIcon, TrendingDownIcon } from 'lucide-react';
+
+import { api, COPYRIGHT_STYLES, UI_URL } from '~/utils';
 
 function Summaries() {
   return (
@@ -18,7 +25,7 @@ function SummaryItem({ title, icon }: { title: string; icon: React.ReactNode }) 
       classNames={{ body: '!p-4' }}
       title={
         <div className='flex items-center gap-2'>
-          <div className='bg-content2 rounded-md p-2'>{icon}</div>
+          <div className='rounded-md bg-content2 p-2'>{icon}</div>
           <span>{title}</span>
         </div>
       }
@@ -29,9 +36,92 @@ function SummaryItem({ title, icon }: { title: string; icon: React.ReactNode }) 
 }
 
 function Securities() {
+  const { data: institutions } = useQuery({
+    queryKey: ['institutions'],
+    queryFn: ({ signal }) => api.get('/institution', { signal }),
+  });
+
+  if (!institutions || !institutions.data) return null;
+
   return (
     <div className='flex flex-col gap-4'>
       <p className='text-2xl font-medium'>All Securities</p>
+
+      <TickerTape
+        symbols={institutions?.data.map((item: any) => ({ proName: item.symbol }))}
+        displayMode='compact'
+        isTransparent
+        copyrightStyles={COPYRIGHT_STYLES}
+      />
+
+      <List
+        itemLayout='vertical'
+        size='large'
+        itemLayout='horizontal'
+        dataSource={institutions?.data}
+        renderItem={(item: any) => (
+          <List.Item key={item.id} className='!px-0'>
+            {/* <List.Item.Meta
+              avatar={
+                <div className='flex aspect-square w-16 overflow-hidden rounded-lg bg-background'>
+                  <img src={`${API_URL}/static/icons/${item.id}.svg`} />
+                </div>
+              }
+            /> */}
+            <div className='grid grid-cols-12 gap-2 overflow-hidden rounded-md bg-background py-2'>
+              <div className='col-span-5 flex flex-col items-center justify-center'>
+                <SingleTicker
+                  symbol={item.symbol}
+                  autosize
+                  isTransparent
+                  largeChartUrl={`${UI_URL}/institution/${item.id}`}
+                  copyrightStyles={COPYRIGHT_STYLES}
+                />
+              </div>
+
+              <div className='col-span-1 flex flex-col items-center'>
+                <span className='text-zinc-400'>Volatility</span>
+                <Statistic value={1} precision={2} suffix='%' />
+              </div>
+              <div className='col-span-1 flex flex-col items-center'>
+                <span className='text-zinc-400'>News</span>
+                <Statistic value={1} />
+              </div>
+              <div className='col-span-1 flex flex-col items-center'>
+                <span className='text-zinc-400'>Negative News</span>
+                <Statistic value={1} />
+              </div>
+              <div className='col-span-2 flex aspect-video flex-col items-center'>
+                <span className='text-zinc-400'>Price</span>
+                <MiniChart
+                  symbol={item.symbol}
+                  dateRange='1D'
+                  autosize
+                  isTransparent
+                  chartOnly
+                  largeChartUrl={`${UI_URL}/institution/${item.id}`}
+                  copyrightStyles={COPYRIGHT_STYLES}
+                />
+              </div>
+              <div className='col-span-2 flex flex-col items-center'>
+                <span className='text-zinc-400'>Leverage Ratio</span>
+                <GaugeComponent
+                  value={50}
+                  arc={{
+                    subArcs: [
+                      { limit: 40, color: 'var(--tw-green-500)', showTick: true },
+                      { limit: 70, color: 'var(--tw-yellow-500)', showTick: true },
+                      { limit: 100, color: 'var(--tw-red-500)', showTick: true },
+                    ],
+                    emptyColor: 'var(--tw-content2)',
+                  }}
+                  labels={{ valueLabel: { matchColorWithArc: true, style: { textShadow: 'none' } } }}
+                />
+              </div>
+            </div>
+          </List.Item>
+        )}
+      />
     </div>
   );
 }
