@@ -51,6 +51,7 @@ function Securities() {
         symbols={institutions?.data.map((item: any) => ({ proName: item.symbol }))}
         displayMode='compact'
         isTransparent
+        largeChartUrl={`${UI_URL}/institution/`}
         copyrightStyles={COPYRIGHT_STYLES}
       />
 
@@ -60,7 +61,7 @@ function Securities() {
         itemLayout='horizontal'
         dataSource={institutions?.data}
         renderItem={(item: any) => (
-          <List.Item key={item.id} className='!px-0'>
+          <List.Item key={item.id} className='my-2 !p-0'>
             {/* <List.Item.Meta
               avatar={
                 <div className='flex aspect-square w-16 overflow-hidden rounded-lg bg-background'>
@@ -68,8 +69,8 @@ function Securities() {
                 </div>
               }
             /> */}
-            <div className='grid grid-cols-12 gap-2 overflow-hidden rounded-md bg-background py-2'>
-              <div className='col-span-5 flex flex-col items-center justify-center'>
+            <div className='grid w-full grid-cols-2 gap-2 overflow-hidden rounded-md bg-background py-1 md:grid-cols-6 xl:grid-cols-12 [&>*]:h-32'>
+              <div className='col-span-2 md:col-span-6 xl:col-span-5'>
                 <SingleTicker
                   symbol={item.symbol}
                   autosize
@@ -92,7 +93,6 @@ function Securities() {
                 <Statistic value={1} />
               </div>
               <div className='col-span-2 flex aspect-video flex-col items-center'>
-                <span className='text-zinc-400'>Price</span>
                 <MiniChart
                   symbol={item.symbol}
                   dateRange='1D'
@@ -106,7 +106,8 @@ function Securities() {
               <div className='col-span-2 flex flex-col items-center'>
                 <span className='text-zinc-400'>Leverage Ratio</span>
                 <GaugeComponent
-                  value={50}
+                  className='[&>svg]:w-48'
+                  value={Math.random() * 0.8 * 100}
                   arc={{
                     subArcs: [
                       { limit: 40, color: 'var(--tw-green-500)', showTick: true },
@@ -115,7 +116,7 @@ function Securities() {
                     ],
                     emptyColor: 'var(--tw-content2)',
                   }}
-                  labels={{ valueLabel: { matchColorWithArc: true, style: { textShadow: 'none' } } }}
+                  labels={{ valueLabel: { matchColorWithArc: true, style: { fontSize: 28, textShadow: 'none' } } }}
                 />
               </div>
             </div>
@@ -126,7 +127,7 @@ function Securities() {
   );
 }
 
-export default function Index() {
+export default function Watchlist() {
   return (
     <div className='flex flex-col gap-4'>
       <Summaries />
