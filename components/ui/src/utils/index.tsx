@@ -2,6 +2,7 @@ import axios from 'axios';
 
 export const UI_URL = 'http://localhost:3000';
 export const API_URL = 'http://localhost:3001';
+export const LARGE_CHART_URL = `${UI_URL}/institution`;
 
 export const COPYRIGHT_STYLES = {
   parent: { display: 'none' },

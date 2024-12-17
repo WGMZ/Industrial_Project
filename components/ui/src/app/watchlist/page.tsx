@@ -3,26 +3,102 @@
 import GaugeComponent from 'react-gauge-component';
 import { MiniChart, SingleTicker, TickerTape } from 'react-ts-tradingview-widgets';
 import { useQuery } from '@tanstack/react-query';
-import { Card, List, Statistic } from 'antd';
+import { Card, List, ListProps, Statistic } from 'antd';
+import { sampleSize } from 'lodash-es';
 import { ActivityIcon, AtSignIcon, FrownIcon, TrendingDownIcon } from 'lucide-react';
 
-import { api, COPYRIGHT_STYLES, UI_URL } from '~/utils';
+import { api, API_URL, COPYRIGHT_STYLES, LARGE_CHART_URL } from '~/utils';
+
+interface Institutional {
+  id: string;
+  name: string;
+  symbol: string;
+}
 
 function Summaries() {
+  const { data: summaries } = useQuery({
+    queryKey: ['summaries'],
+    queryFn: ({ signal }) => api.get('/summary', { signal }),
+  });
+
+  if (!summaries || !summaries.data) return null;
+
   return (
     <div className='grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4'>
-      <SummaryItem title='Top 5 Volatile' icon={<ActivityIcon size={16} />} />
-      <SummaryItem title='Top 5 Decliners' icon={<TrendingDownIcon size={16} />} />
-      <SummaryItem title='Top 5 Negative News' icon={<FrownIcon size={16} />} />
-      <SummaryItem title='Top 5 Mentions' icon={<AtSignIcon size={16} />} />
+      <SummaryItem<Institutional>
+        title='Top 5 Volatiles'
+        icon={<ActivityIcon size={16} />}
+        data={sampleSize(summaries.data.volatiles, 5)}
+        render={(item) => (
+          <List.Item>
+            <div className='flex aspect-square w-12 items-center justify-center overflow-hidden rounded-lg'>
+              <img src={`${API_URL}/static/icons/${item.id}.svg`} alt={item.name} />
+            </div>
+            <List.Item.Meta className='ml-2' title={item.name} description={item.symbol} />
+            <div>{(Math.random() * 0.8 * 50).toFixed(2)}%</div>
+          </List.Item>
+        )}
+      />
+      <SummaryItem<Institutional>
+        title='Top 5 Decliners'
+        icon={<TrendingDownIcon size={16} />}
+        data={sampleSize(summaries.data.decliners, 5)}
+        render={(item) => (
+          <List.Item>
+            <div className='flex aspect-square w-12 items-center justify-center overflow-hidden rounded-lg'>
+              <img src={`${API_URL}/static/icons/${item.id}.svg`} alt={item.name} />
+            </div>
+            <List.Item.Meta className='ml-2' title={item.name} description={item.symbol} />
+            <div>-{(Math.random() * 0.8 * 50).toFixed(2)}%</div>
+          </List.Item>
+        )}
+      />
+      <SummaryItem<Institutional>
+        title='Top 5 Negative News'
+        icon={<FrownIcon size={16} />}
+        data={sampleSize(summaries.data.negativeNews, 5)}
+        render={(item) => (
+          <List.Item>
+            <div className='flex aspect-square w-12 items-center justify-center overflow-hidden rounded-lg'>
+              <img src={`${API_URL}/static/icons/${item.id}.svg`} alt={item.name} />
+            </div>
+            <List.Item.Meta className='ml-2' title={item.name} description={item.symbol} />
+            <div>{(Math.random() * 0.8 * 10).toFixed(0)}</div>
+          </List.Item>
+        )}
+      />
+      <SummaryItem<Institutional>
+        title='Top 5 Mentions'
+        icon={<AtSignIcon size={16} />}
+        data={sampleSize(summaries.data.mentions, 5)}
+        render={(item) => (
+          <List.Item>
+            <div className='flex aspect-square w-12 items-center justify-center overflow-hidden rounded-lg'>
+              <img src={`${API_URL}/static/icons/${item.id}.svg`} alt={item.name} />
+            </div>
+            <List.Item.Meta className='ml-2' title={item.name} description={item.symbol} />
+            <div>{(Math.random() * 0.8 * 50).toFixed(0)}</div>
+          </List.Item>
+        )}
+      />
     </div>
   );
 }
 
-function SummaryItem({ title, icon }: { title: string; icon: React.ReactNode }) {
+function SummaryItem<T = unknown>({
+  title,
+  icon,
+  data,
+  render,
+}: {
+  title: string;
+  icon: React.ReactNode;
+  data: T[];
+  render: ListProps<T>['renderItem'];
+}) {
   return (
     <Card
-      classNames={{ body: '!p-4' }}
+      classNames={{ body: '!px-2 !py-0' }}
       title={
         <div className='flex items-center gap-2'>
           <div className='rounded-md bg-content2 p-2'>{icon}</div>
@@ -30,7 +106,7 @@ function SummaryItem({ title, icon }: { title: string; icon: React.ReactNode }) 
         </div>
       }
     >
-      <List></List>
+      <List itemLayout='horizontal' dataSource={data} renderItem={render} />
     </Card>
   );
 }
@@ -51,7 +127,7 @@ function Securities() {
         symbols={institutions?.data.map((item: any) => ({ proName: item.symbol }))}
         displayMode='compact'
         isTransparent
-        largeChartUrl={`${UI_URL}/institution/`}
+        largeChartUrl={LARGE_CHART_URL}
         copyrightStyles={COPYRIGHT_STYLES}
       />
 
@@ -75,7 +151,7 @@ function Securities() {
                   symbol={item.symbol}
                   autosize
                   isTransparent
-                  largeChartUrl={`${UI_URL}/institution/${item.id}`}
+                  largeChartUrl={LARGE_CHART_URL}
                   copyrightStyles={COPYRIGHT_STYLES}
                 />
               </div>
@@ -99,7 +175,7 @@ function Securities() {
                   autosize
                   isTransparent
                   chartOnly
-                  largeChartUrl={`${UI_URL}/institution/${item.id}`}
+                  largeChartUrl={LARGE_CHART_URL}
                   copyrightStyles={COPYRIGHT_STYLES}
                 />
               </div>
